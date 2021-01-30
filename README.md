@@ -1,6 +1,11 @@
-# pysibila
+# Pysibila
 
-# Ejecucion 
+Pysibila es una api desarrollada en flask con el objetivo de permitir agregar nuevas funcionalidades a la api getaway en java, incorporar sus funcionalidades y eventualmente reemplazarla.
+
+# Entorno
+# Estructura
+
+# Ejecución 
 
 - Crear un entorno virtual con virtualenv para python3
 
@@ -25,7 +30,7 @@
         flask run
 
 
-# Documentacion
+# Documentación
 Se puede acceder a la documentación de la api con la url_ /docs
 
 Para que la documentacion este disponible, se debe configurar el entorno
