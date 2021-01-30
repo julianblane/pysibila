@@ -2,10 +2,10 @@
 
 Pysibila es una api desarrollada en flask con el objetivo de permitir agregar nuevas funcionalidades a la api getaway en java, incorporar sus funcionalidades y eventualmente reemplazarla.
 
-# Entorno
+# Entorno de pysibila (Sistema sibila)
 ![alt text](/documentacion/estructura_sibila.png)
-# Estructura
-
+# Estructura de pysibila
+![alt text](/documentacion/estructura_pysibila.png)
 # Ejecución 
 
 - Crear un entorno virtual con virtualenv para python3
