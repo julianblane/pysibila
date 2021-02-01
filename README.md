@@ -26,6 +26,20 @@ Pysibila es una api desarrollada en flask con el objetivo de permitir agregar nu
 
          Agregar las lineas anteriores al archivo 'activate' en la carpeta 'venv/bin'
 
+- Setear las vareables de entorno (para windows):
+
+    -  Por consola:
+
+            set FLASK_APP="entrypoint:app"
+            set FLASK_ENV="development"
+            set APP_SETTINGS_MODULE="config.default"
+
+    - De forma permanente: 
+
+         Agregar las lineas anteriores al archivo 'activate.bat' en la carpeta 'venv/Scripts'
+
+- Activar el entorno virtual
+
 - Correr el proyecto
 
         flask run
