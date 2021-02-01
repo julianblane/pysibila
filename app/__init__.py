@@ -1,6 +1,5 @@
 from flask import Flask
-# from app.pysibila.api_v1 import pysibila_v1_bp
-from app.pysibila.api_v1.ext import pysibila_v1_bp 
+from app.pysibila.api_v1.resources import pysibila_v1_bp 
 
 def create_app(settings_module):
     app = Flask(__name__, static_url_path='')
@@ -9,4 +8,4 @@ def create_app(settings_module):
 
     app.register_blueprint(pysibila_v1_bp)
 
-    return app
+    return app 

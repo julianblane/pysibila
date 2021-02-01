@@ -1,8 +1,8 @@
 from flask_restx import Resource
-from .schemas import concept_list 
-from .ext import api
+from .schemas import concept_list
+from .ext import api, pysibila_v1_bp
 
-from conocimiento.views import get_concepts
+from app.conocimiento.views import get_concepts
 
 @api.route("/conceptos")
 class ConceptList(Resource):
@@ -15,14 +15,14 @@ class ConceptCreate(Resource):
     def post(self):
         pass
 
-@api.route("/concepto/<nombre>")
-class ConceptCreate(Resource):
-    def post(self, nombre):
-        pass
-    def put(self, nombre):
-        pass
-    def delete(self, nombre):
-        pass
+# @api.route("/concepto/<nombre>")
+# class ConceptManager(Resource):
+#     def get(self, nombre):
+#         pass
+#     def put(self, nombre):
+#         pass
+#     def delete(self, nombre):
+#         pass
 
 # POST/concepto
 # GET/concepto/{nombre}
