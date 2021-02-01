@@ -32,9 +32,7 @@ Pysibila es una api desarrollada en flask con el objetivo de permitir agregar nu
 
 
 # Documentación
-Se puede acceder a la documentación de la api con la url_ /docs
+Se puede acceder a la documentación de la api con la url raiz
 
-Para que la documentacion este disponible, se debe configurar el entorno
-como testing cambiando la flag app.testing=false en el archivo:
-
-    app/__init__.py
+Documentacion de la api de java:
+https://app.swaggerhub.com/apis/UTN-SIBILA/UTN-SIBILA/1.0.0#/

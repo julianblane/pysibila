@@ -15,14 +15,16 @@ class ConceptCreate(Resource):
     def post(self):
         pass
 
-# @api.route("/concepto/<nombre>")
-# class ConceptManager(Resource):
-#     def get(self, nombre):
-#         pass
-#     def put(self, nombre):
-#         pass
-#     def delete(self, nombre):
-#         pass
+@api.route("/concepto/<nombre>")
+class ConceptManager(Resource):
+    def get(self, nombre):
+        pass
+
+    def put(self, nombre):
+        pass
+
+    def delete(self, nombre):
+        pass
 
 # POST/concepto
 # GET/concepto/{nombre}
