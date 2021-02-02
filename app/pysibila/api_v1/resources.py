@@ -1,13 +1,15 @@
 from flask import request
 from flask_restx import Resource
-from .schemas import concept_list, concept_name, concept_response
+from .schemas import concept_list, concept_name, concept_response, \
+    relation_list, relation_response
 
 # Se debe importar el blueprint aunque no se utilice para que el codigo
 # en este archivo sea leido, no modificar
 from .ext import api, pysibila_v1_bp
 
-from app.conocimiento.views import get_concepts, create_concept,\
-    get_concept, update_concept, delete_concept
+from app.conocimiento.views import \
+    get_concepts, create_concept, get_concept, update_concept, delete_concept,\
+    get_relations, get_relation
 
 
 # Conceptos
@@ -52,21 +54,23 @@ class ConceptManager(Resource):
 # Relaciones
 @api.route("/relaciones")
 class RelationList(Resource):
+    @api.marshal_with(relation_list)
     def get(self):
         """Devuelve todAs las relaciones que contiene la base de conocimiento"""
-        pass
+        return get_relations()
 
 
-@api.route("/relacion/{nombre}")
-class RelationCreate(Resource):
+@api.route("/relacion/<nombre>")
+class RelationGet(Resource):
+    @api.marshal_with(relation_response)
     def get(self, nombre):
         """Busca una relación dentro de la base de conocimiento y muestra los datos si existe"""
-        pass
+        return get_relation(nombre)
 
 
 # Estructura
 @api.route("/estructura")
-class RelationCreate(Resource):
+class StructureCreate(Resource):
     def post(self):
         """Inserta una nueva estructura en la base de conocimiento"""
         pass

@@ -6,7 +6,7 @@ testing = True
 if testing: url = "http://localhost:8080"
 else: url = "http://sibila.website:8080"
 
-
+# conceptos
 def get_concepts():
     """Devuelve una lista de conceptos consultando la bd de grafos"""
     # Temporario: consulta a la api en java
@@ -43,4 +43,19 @@ def delete_concept(name):
     """Elimina un concepto de la BD"""
     # Temporario: pedido a la api en java
     request = requests.delete(f'{url}/concepto/{name}')
+    return request.json()
+
+
+# Relaciones
+def get_relations():
+    """Devuelve una lista de relaciones consultando la bd de grafos"""
+    # Temporario: consulta a la api en java
+    request = requests.get(f'{url}/relaciones')
+    return request.json()
+
+
+def get_relation(name):
+    """Busca un concepto en la BD"""
+    # Temporario: pedido a la api en java
+    request = requests.get(f'{url}/relacion/{name}')
     return request.json()

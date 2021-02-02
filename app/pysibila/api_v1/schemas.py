@@ -14,7 +14,7 @@ concept = api.model("Concept", {
     'equivalencias': fields.List(fields.Nested(equivalence))
 })
 
-data_concepts = api.model("ConceptDict", {
+data_concepts = api.model("ConceptsDict", {
     "conceptos": fields.List(fields.Nested(concept))
 })
 
@@ -23,10 +23,12 @@ concept_list = api.model('ConceptList', {
     "mensaje": fields.String,
     "datos": fields.Nested(data_concepts)
 })
+
 # Single concept
 data_concept = api.model("ConceptDict", {
     "concepto": fields.Nested(concept)
 })
+
 concept_response = api.model('ConceptList', {
     "estado": fields.String(description="Estado", enum=['ok', 'error', 'no encontrado']),
     "mensaje": fields.String,
@@ -38,3 +40,30 @@ concept_name = api.model("ConceptName", {
     "nombre": fields.String()
 })
 
+
+# Relaciones
+relation = api.model('Relation', {
+    "id": fields.String,
+    "nombre": fields.String,
+    "tipo": fields.String
+})
+
+data_relations = api.model("RelationsDict", {
+    "relaciones": fields.List(fields.Nested(relation))
+})
+
+relation_list = api.model("RelationList", {
+    "estado": fields.String(description="Estado", enum=['ok', 'error', 'no encontrado']),
+    "mensaje": fields.String,
+    "datos": fields.Nested(data_relations)
+})
+
+data_relation = api.model("RelationDict", {
+    "relacion": fields.Nested(relation)
+})
+
+relation_response = api.model("RelationResponse", {
+    "estado": fields.String(description="Estado", enum=['ok', 'error', 'no encontrado']),
+    "mensaje": fields.String,
+    "datos": fields.Nested(data_relation)
+})
