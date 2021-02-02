@@ -18,3 +18,9 @@ def create_concept(post_data):
     request = requests.post(f'{url}/concepto', data=post_data)
 
     return request.json()
+
+def delete_concept(name):
+    """Elimina un concepto de la BD"""
+    # Temporario: pedido a la api en java
+    request = requests.delete(f'{url}/concepto/{name}')
+    return request.json()

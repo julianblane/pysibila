@@ -6,7 +6,7 @@ from .schemas import concept_list, concept_name, concept_response
 # en este archivo sea leido, no modificar
 from .ext import api, pysibila_v1_bp
 
-from app.conocimiento.views import get_concepts, create_concept
+from app.conocimiento.views import get_concepts, create_concept, delete_concept
 
 
 # Conceptos
@@ -37,9 +37,10 @@ class ConceptManager(Resource):
     def put(self, nombre):
         """Actualiza un concepto buscandolo por nombre"""
 
+    @api.marshal_with(concept_response)
     def delete(self, nombre):
         """Borra un concepto de la base de conocimiento buscandolo por nombre"""
-        pass
+        return delete_concept(nombre)
 
 
 # Relaciones
