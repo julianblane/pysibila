@@ -1,6 +1,12 @@
 from .ext import api
 from flask_restx import fields
 
+# Termino
+term = api.model("Term", {
+    'id': fields.String,
+    'nombre': fields.String,
+})
+
 # Concepto
 # ConceptList
 equivalence = api.model('Equivalence', {
@@ -75,3 +81,6 @@ estructure = api.model("Structure", {
     "conceptoDestino": fields.String,
     "relacion": fields.String
 })
+
+
+# Guardar respuesta

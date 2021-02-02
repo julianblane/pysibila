@@ -9,7 +9,7 @@ from .ext import api, pysibila_v1_bp
 
 from app.conocimiento.views import \
     get_concepts, create_concept, get_concept, update_concept, delete_concept,\
-    get_relations, get_relation, create_structure
+    get_relations, get_relation, create_structure, save_responses
 
 
 # Funcionalidades heredadas
@@ -79,6 +79,7 @@ class StructureCreate(Resource):
         data = request.get_json()
         return create_structure(data)
 
+
 # Respuesta
 @api.route("/respuesta/evaluar")
 class ResponseEvaluate(Resource):
@@ -99,4 +100,5 @@ class ResponseCorrect(Resource):
 class ResponseSave(Resource):
     def post(self):
         """Inserta una lista de respuestas en forma de concepto-relacion-concepto en la base de datos"""
-        pass
+        data = request.get_json()
+        return save_responses(data)

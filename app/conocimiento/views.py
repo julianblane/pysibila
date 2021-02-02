@@ -69,3 +69,16 @@ def create_structure(data):
     # Temporario: pedido a la api en java
     request = requests.post(f'{url}/estructura', data=data)
     return request.json()
+
+
+def save_response(respuesta):
+    """Guarda una respuesta completa en base de datos"""
+    # Sera necesario implementar un sistema de rollback
+    # para el grabado de la respuesta
+    pass
+
+
+def save_responses(data):
+    """Guarda una lista de respuestas en base de datos y devuelve
+     un dict con el resultado de cada operacion"""
+    pass
