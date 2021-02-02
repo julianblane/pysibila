@@ -67,3 +67,11 @@ relation_response = api.model("RelationResponse", {
     "mensaje": fields.String,
     "datos": fields.Nested(data_relation)
 })
+
+
+# Estructura
+estructure = api.model("Structure", {
+    "conceptoOrigen": fields.String,
+    "conceptoDestino": fields.String,
+    "relacion": fields.String
+})

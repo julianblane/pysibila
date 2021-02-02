@@ -59,3 +59,13 @@ def get_relation(name):
     # Temporario: pedido a la api en java
     request = requests.get(f'{url}/relacion/{name}')
     return request.json()
+
+
+def create_structure(data):
+    """Crea una estructura de concepto relacion concepto,
+    creando cada concepto y la relacion entre ellos solo si no existen"""
+    # Problema: En ocaciones parece duplicar los coneptos en bd
+    # Ver que tipo de objeto deberia devolver data (estimo que un par concepto relacion concepto)
+    # Temporario: pedido a la api en java
+    request = requests.post(f'{url}/estructura', data=data)
+    return request.json()

@@ -1,7 +1,7 @@
 from flask import request
 from flask_restx import Resource
 from .schemas import concept_list, concept_name, concept_response, \
-    relation_list, relation_response
+    relation_list, relation_response, estructure
 
 # Se debe importar el blueprint aunque no se utilice para que el codigo
 # en este archivo sea leido, no modificar
@@ -9,7 +9,7 @@ from .ext import api, pysibila_v1_bp
 
 from app.conocimiento.views import \
     get_concepts, create_concept, get_concept, update_concept, delete_concept,\
-    get_relations, get_relation
+    get_relations, get_relation, create_structure
 
 
 # Conceptos
@@ -71,10 +71,12 @@ class RelationGet(Resource):
 # Estructura
 @api.route("/estructura")
 class StructureCreate(Resource):
+    @api.expect(estructure)
+    @api.marshal_with(relation_response)
     def post(self):
         """Inserta una nueva estructura en la base de conocimiento"""
-        pass
-
+        data = request.get_json()
+        return create_structure(data)
 
 # Respuesta
 @api.route("/respuesta/evaluar")
@@ -82,6 +84,7 @@ class ResponseEvaluate(Resource):
     def post(self):
         """Evalúa a respuesta de un estudiante y devuelve la calificación"""
         pass
+
 
 @api.route("/respuesta/corregir")
 class ResponseCorrect(Resource):
