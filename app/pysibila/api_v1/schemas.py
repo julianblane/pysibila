@@ -23,14 +23,18 @@ concept_list = api.model('ConceptList', {
     "mensaje": fields.String,
     "datos": fields.Nested(data_concepts)
 })
+# Single concept
+data_concept = api.model("ConceptDict", {
+    "concepto": fields.Nested(concept)
+})
+concept_response = api.model('ConceptList', {
+    "estado": fields.String(description="Estado", enum=['ok', 'error', 'no encontrado']),
+    "mensaje": fields.String,
+    "datos": fields.Nested(data_concept)
+})
 
 # ConceptCreate
 concept_name = api.model("ConceptName", {
     "nombre": fields.String()
 })
 
-concept_response = api.model("ConceptResponse", {
-    "estado": fields.String(),
-    "mensaje": fields.String(),
-    "datos": fields.Nested(concept)
-})

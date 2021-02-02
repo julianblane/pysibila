@@ -6,7 +6,8 @@ from .schemas import concept_list, concept_name, concept_response
 # en este archivo sea leido, no modificar
 from .ext import api, pysibila_v1_bp
 
-from app.conocimiento.views import get_concepts, create_concept, delete_concept
+from app.conocimiento.views import get_concepts, create_concept,\
+    get_concept, update_concept, delete_concept
 
 
 # Conceptos
@@ -21,7 +22,7 @@ class ConceptList(Resource):
 @api.route("/concepto")
 class ConceptCreate(Resource):
     @api.expect(concept_name)
-    @api.marshal_with(concept_response)
+    @api.marshal_with(concept_list)
     def post(self):
         """Inserta un nuevo concepto en la base de conocimiento"""
         data = request.get_json()
@@ -30,12 +31,17 @@ class ConceptCreate(Resource):
 
 @api.route("/concepto/<nombre>")
 class ConceptManager(Resource):
+    @api.marshal_with(concept_response)
     def get(self, nombre):
         """Busca un concepto dentro de la base de conocimiento y muestra los datos si existe"""
-        pass
+        return get_concept(nombre)
 
+    @api.expect(concept_name)
+    @api.marshal_with(concept_response)
     def put(self, nombre):
         """Actualiza un concepto buscandolo por nombre"""
+        data = request.get_json()
+        return update_concept(nombre, data)
 
     @api.marshal_with(concept_response)
     def delete(self, nombre):
