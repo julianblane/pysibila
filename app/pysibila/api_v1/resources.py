@@ -14,7 +14,7 @@ from app.conocimiento.views import \
     get_concepts, create_concept, get_concept, update_concept, delete_concept,\
     get_relations, get_relation, create_structure, save_responses
 
-from .models import ConceptRegister
+from .models import ConceptRegister, EstructureRegister
 
 # Funcionalidades heredadas
 # Conceptos
@@ -82,6 +82,7 @@ class RelationGet(Resource):
 # Estructura
 @api.route("/estructura")
 class StructureCreate(Resource):
+    @validate(body=EstructureRegister)
     @api.expect(estructure)
     @api.marshal_with(relation_response)
     def post(self):

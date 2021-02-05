@@ -9,7 +9,7 @@ class TestAPI(unittest.TestCase):
         self.tester = app.test_client(self)
 
         self.concept_name = "pysibila_concepto_prueba"
-        self.nombre_relacion = "pysibila_relacion_prueba"
+        self.relation_name = "pysibila_relacion_prueba"
 
         # Formato de las respuestas esperadas
         self.concept_list_response = {
@@ -65,6 +65,30 @@ class TestAPI(unittest.TestCase):
             },
             "message": "Input payload validation failed"
         }
+        self.relations_list_response = {
+            "estado": "ok",
+            "mensaje": "string",
+            "datos": {
+                "relaciones": [
+                    {
+                        "id": "string",
+                        "nombre": "string",
+                        "tipo": "string"
+                    }
+                ]
+            }
+        }
+        self.relation_response = {
+            "estado": "ok",
+            "mensaje": "string",
+            "datos": {
+                "relacion": {
+                    "id": "string",
+                    "nombre": "string",
+                    "tipo": "string"
+                }
+            }
+        }
 
     # Funciones de soporte
     def create_concept(self, concept=None):
@@ -80,13 +104,22 @@ class TestAPI(unittest.TestCase):
 
     def get_concept(self, concept=None):
         if concept is None: concept = self.concept_name
-        self.tester.get(f'/concepto/{concept}',
+        return self.tester.get(f'/concepto/{concept}',
                         headers={"Content-Type": "application/json"})
 
-    def concept_exist(self, concept=None):
+    def concept_exists(self, concept=None):
         if concept is None: concept = self.concept_name
-        response = self.tester.get(f'/concepto/{concept}',
-                                   headers={"Content-Type": "application/json"})
+        response = self.get_concept(concept)
+        return 'ok' == response.json['estado']
+
+    def get_relation(self, relation=None):
+        if relation is None: relation = self.concept_name
+        return self.tester.get(f'/relacion/{relation}',
+                               headers={"Content-Type": "application/json"})
+
+    def relation_exists(self, relation=None):
+        if relation is None: relation = self.relation_name
+        response = self.get_relation(relation)
         return 'ok' == response.json['estado']
 
     # Test
@@ -97,6 +130,7 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(200, response.status_code)
         # Cuerpo de respuesta
         self.assertTrue(compare(self.concept_list_response, response.json))
+        self.assertEqual('ok', response.json['estado'])
 
 
     def test_concept_create(self):
@@ -111,7 +145,7 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(200, response.status_code)
         self.assertTrue(compare(self.concept_response, response.json))
         self.assertEqual('ok', response.json['estado'])
-        self.assertTrue(self.concept_exist())
+        self.assertTrue(self.concept_exists())
 
         # Concepto insertado repetido
         response = self.tester.post('/concepto',
@@ -120,7 +154,7 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(200, response.status_code)
         self.assertTrue(compare(self.concept_response, response.json))
         self.assertEqual('error', response.json['estado'])
-        self.assertTrue(self.concept_exist())
+        self.assertTrue(self.concept_exists())
 
         # Respuesta incorrecta
         # Estructura incorrecta
@@ -192,9 +226,9 @@ class TestAPI(unittest.TestCase):
         self.assertEqual('ok', response.json['estado'])
 
         # Verifica si el concepto existe con su nombre cambiado
-        self.assertTrue(self.concept_exist('{self.concept_name}_modificado'))
+        self.assertTrue(self.concept_exists('{self.concept_name}_modificado'))
         # Verifica que el concepto no exista con su nombre anterior
-        self.assertFalse(self.concept_exist('{self.concept_name}'))
+        self.assertFalse(self.concept_exists('{self.concept_name}'))
 
         self.delete_concept()
         self.delete_concept(f"{self.concept_name}_modificado")
@@ -215,9 +249,9 @@ class TestAPI(unittest.TestCase):
         self.assertEqual('no encontrado', response.json['estado'])
 
         # Verifica si el concepto existe con su nombre cambiado
-        self.assertFalse(self.concept_exist('{self.concept_name}_modificado'))
+        self.assertFalse(self.concept_exists('{self.concept_name}_modificado'))
         # Verifica que el concepto no exista con su nombre anterior
-        self.assertFalse(self.concept_exist('{self.concept_name}'))
+        self.assertFalse(self.concept_exists('{self.concept_name}'))
 
         self.delete_concept()
         self.delete_concept(f"{self.concept_name}_modificado")
@@ -238,9 +272,9 @@ class TestAPI(unittest.TestCase):
         self.assertEqual('error', response.json['estado'])
 
         # Verifica si el concepto existe con su nombre cambiado
-        self.assertFalse(self.concept_exist('{self.concept_name}_modificado'))
+        self.assertFalse(self.concept_exists('{self.concept_name}_modificado'))
         # Verifica que el concepto no exista con su nombre anterior
-        self.assertFalse(self.concept_exist('{self.concept_name}'))
+        self.assertFalse(self.concept_exists('{self.concept_name}'))
 
         self.delete_concept()
         self.delete_concept(f"{self.concept_name}_modificado")
@@ -271,7 +305,7 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(200, response.status_code)
         self.assertTrue(compare(self.concept_response, response.json))
         self.assertEqual('ok', response.json['estado'])
-        self.assertFalse(self.concept_exist())
+        self.assertFalse(self.concept_exists())
 
         # Eliminar concepto inexistente
         response = self.tester.delete(f'/concepto/{self.concept_name}',
@@ -279,3 +313,120 @@ class TestAPI(unittest.TestCase):
         self.assertEqual(200, response.status_code)
         self.assertTrue(compare(self.concept_response, response.json))
         self.assertEqual('no encontrado', response.json['estado'])
+
+
+    def test_relations_list(self):
+        response = self.tester.get('/relaciones',
+                                   headers={"Content-Type": "application/json"})
+        self.assertEqual(200, response.status_code)
+        self.assertTrue(compare(self.relations_list_response, response.json))
+        self.assertEqual('ok', response.json['estado'])
+
+
+    def test_relation_get(self):
+        # Relacion encontrada
+        response = self.tester.get(f'/relacion/{self.relation_name}',
+                                   headers={"Content-Type": "application/json"})
+        self.assertEqual(200, response.status_code)
+        self.assertTrue(compare(self.relation_response, response.json))
+        self.assertEqual('ok', response.json['estado'])
+
+        # Relacion no encontrada: No se puede eliminar las relaciones ya creadas
+        response = self.tester.get(f'/relacion/{self.relation_name}_inexistente',
+                                   headers={"Content-Type": "application/json"})
+        self.assertEqual(200, response.status_code)
+        self.assertTrue(compare(self.relation_response, response.json))
+        self.assertEqual('no encontrado', response.json['estado'])
+
+
+    def test_structure_create_all(self):
+        # Conceptos
+        concept_1 = f'{self.concept_name}_1'
+        concept_2 = f'{self.concept_name}_2'
+        relation = self.relation_name
+        # Se eliminan antes de empezar
+        self.delete_concept(concept_1)
+        self.delete_concept(concept_2)
+
+        # Crear los nodos y la relacion
+        response = self.tester.post(f'/estructura',
+                                    headers={"Content-Type": "application/json"},
+                                    json={
+                                        "conceptoOrigen": concept_1,
+                                        "conceptoDestino": concept_2,
+                                        "relacion": relation
+                                    })
+        self.assertEqual(200, response.status_code)
+        self.assertTrue(compare(self.relation_response, response.json))
+        self.assertEqual('ok', response.json['estado'])
+        self.assertTrue(self.concept_exists(concept_1))
+        self.assertTrue(self.concept_exists(concept_2))
+        self.assertTrue(self.relation_exists(relation))
+
+        # Crear una relacion con nodos ya existentes
+        response = self.tester.post(f'/estructura',
+                                    headers={"Content-Type": "application/json"},
+                                    json={
+                                        "conceptoOrigen": concept_1,
+                                        "conceptoDestino": concept_2,
+                                        "relacion": relation
+                                    })
+        self.assertEqual(200, response.status_code)
+        self.assertTrue(compare(self.relation_response, response.json))
+        self.assertEqual('ok', response.json['estado'])
+        self.assertTrue(self.concept_exists(concept_1))
+        self.assertTrue(self.concept_exists(concept_2))
+        self.assertTrue(self.relation_exists(relation))
+
+        # Conceptos y relaciones ya creadas
+        response = self.tester.post(f'/estructura',
+                                    headers={"Content-Type": "application/json"},
+                                    json={
+                                        "conceptoOrigen": concept_1,
+                                        "conceptoDestino": concept_2,
+                                        "relacion": relation
+                                    })
+        self.assertEqual(200, response.status_code)
+        self.assertTrue(compare(self.relation_response, response.json))
+        self.assertEqual('ok', response.json['estado'])
+
+        # Se eliminan al terminar
+        self.delete_concept(concept_1)
+        self.delete_concept(concept_2)
+
+        # La relacion se deberia eliminar al eliminar los nodos
+        # self.assertFalse(self.relation_exists(relation))
+
+
+    def test_structure_errors(self):
+        # Conceptos
+        concept_1 = f'{self.concept_name}_1'
+        concept_2 = f'{self.concept_name}_2'
+        relation = self.relation_name
+        # Se crean los conceptos antes de empezar
+
+        # Respuesta incorrecta
+        # Estructura incorrecta
+        response = self.tester.post(f'/estructura',
+                                    headers={"Content-Type": "application/json"},
+                                    json={
+                                        "incorrecto": concept_1,
+                                        "conceptoDestino": concept_2,
+                                        "relacion": relation
+                                    })
+        self.assertEqual(400, response.status_code)
+        self.assertTrue(compare(self.response_404_structure, response.json))
+
+        # Contenido incorrecto
+        esponse = self.tester.post(f'/estructura',
+                                   headers={"Content-Type": "application/json"},
+                                   json={
+                                       "conceptoOrigen": 2,
+                                       "conceptoDestino": concept_2,
+                                       "relacion": relation
+                                   })
+        self.assertEqual(400, response.status_code)
+        self.assertTrue(compare(self.response_404_structure, response.json))
+
+        # Eliminar concepto creado
+        self.delete_concept()
