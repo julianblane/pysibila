@@ -1,6 +1,8 @@
 from flask import request
 from flask_restx import Resource
-from .schemas import concept_list_response, concept_name, concept_response, \
+from flask_pydantic import validate
+
+from .schemas import response_404, concept_list_response, concept_name, concept_response, \
     relation_list_response, relation_response, estructure
 
 # Se debe importar el blueprint aunque no se utilice para que el codigo
@@ -11,6 +13,7 @@ from app.conocimiento.views import \
     get_concepts, create_concept, get_concept, update_concept, delete_concept,\
     get_relations, get_relation, create_structure, save_responses
 
+from .models import ConceptRegister
 
 # Funcionalidades heredadas
 # Conceptos
@@ -24,8 +27,10 @@ class ConceptList(Resource):
 
 @api.route("/concepto")
 class ConceptCreate(Resource):
+    @validate(body=ConceptRegister)
     @api.expect(concept_name)
     @api.marshal_with(concept_list_response)
+    @api.response(400, 'Validation error', response_404)
     def post(self):
         """Inserta un nuevo concepto en la base de conocimiento"""
         data = request.get_json()
@@ -39,8 +44,10 @@ class ConceptManager(Resource):
         """Busca un concepto dentro de la base de conocimiento y muestra los datos si existe"""
         return get_concept(nombre)
 
+    @validate(body=ConceptRegister)
     @api.expect(concept_name)
     @api.marshal_with(concept_response)
+    @api.response(400, 'Validation error', response_404)
     def put(self, nombre):
         """Actualiza un concepto buscandolo por nombre"""
         data = request.get_json()

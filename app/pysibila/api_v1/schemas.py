@@ -1,5 +1,21 @@
-from .ext import api
 from flask_restx import fields
+
+from .ext import api
+
+# Response 404
+body_param = api.model('body_param', {
+    "loc": fields.List(fields.String),
+    "msg": fields.String,
+    "type": fields.String,
+})
+
+body_params = api.model('body_params', {
+    'body_params': fields.List(fields.Nested(body_param))
+})
+
+response_404 = api.model('Response404', {
+    'validation_error': fields.Nested(body_params)
+})
 
 # Termino
 term = api.model("Term", {

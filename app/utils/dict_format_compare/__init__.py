@@ -1,0 +1,1 @@
+from .dict_format_compare import compare
