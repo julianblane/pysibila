@@ -2,7 +2,8 @@ from flask import request
 from flask_restx import Resource
 from flask_pydantic import validate
 
-from .schemas import response_404, concept_list_response, concept_name, concept_response, \
+from .schemas import response_404_structure, response_404_content, \
+    concept_list_response, concept_name, concept_response, \
     relation_list_response, relation_response, estructure
 
 # Se debe importar el blueprint aunque no se utilice para que el codigo
@@ -27,10 +28,12 @@ class ConceptList(Resource):
 
 @api.route("/concepto")
 class ConceptCreate(Resource):
+    # Valida la estructura del json
     @validate(body=ConceptRegister)
+    # Valida el contenido del json
     @api.expect(concept_name)
-    @api.marshal_with(concept_list_response)
-    @api.response(400, 'Validation error', response_404)
+    @api.marshal_with(concept_response)
+    @api.response(400, 'Validation error: Estructura del json incorrecta', response_404_structure)
     def post(self):
         """Inserta un nuevo concepto en la base de conocimiento"""
         data = request.get_json()
@@ -47,7 +50,7 @@ class ConceptManager(Resource):
     @validate(body=ConceptRegister)
     @api.expect(concept_name)
     @api.marshal_with(concept_response)
-    @api.response(400, 'Validation error', response_404)
+    @api.response(400, 'Validation error', response_404_structure)
     def put(self, nombre):
         """Actualiza un concepto buscandolo por nombre"""
         data = request.get_json()
