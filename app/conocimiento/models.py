@@ -98,15 +98,11 @@ class Concept(Term):
         return None, data
 
     @classmethod
-    def delete(self, name):
+    def delete(cls, name):
         """Elimina un concepto de la BD"""
         # Temporario: pedido a la api en java
         request = requests.delete(f'{URL}/concepto/{name}')
         return request.json()
-
-
-    # @classmethod
-    # def delete(cls):
 
 
 class Relation(Term):

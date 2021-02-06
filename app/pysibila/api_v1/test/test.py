@@ -2,7 +2,7 @@ import unittest
 from entrypoint import app
 app.validate = True
 from app.utils.dict_format_compare import compare
-
+from app.conocimiento.models import Concept, Relation
 
 class TestAPI(unittest.TestCase):
     def setUp(self) -> None:
@@ -103,17 +103,15 @@ class TestAPI(unittest.TestCase):
     # Funciones de soporte
     def create_concept(self, concept=None):
         if concept is None: concept = self.concept_name
-        self.tester.post('/concepto',
-                         headers={"Content-Type": "application/json"},
-                         json={"nombre": concept})
+        Concept.save(concept)
 
     def delete_concept(self, concept=None):
         if concept is None: concept = self.concept_name
-        self.tester.delete(f'/concepto/{concept}',
-                           headers={"Content-Type": "application/json"})
+        Concept.delete(concept)
 
     def get_concept(self, concept=None):
         if concept is None: concept = self.concept_name
+        # return Concept.get(concept)
         return self.tester.get(f'/concepto/{concept}',
                         headers={"Content-Type": "application/json"})
 
