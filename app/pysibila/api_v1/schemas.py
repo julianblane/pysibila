@@ -26,12 +26,6 @@ response_404_content = api.model('Response404Content', {
 })
 
 
-# Termino
-term = api.model("Term", {
-    'id': fields.String,
-    'nombre': fields.String,
-})
-
 # Concepto
 # ConceptList
 equivalence = api.model('Equivalence', {
@@ -109,3 +103,28 @@ estructure = api.model("Structure", {
 
 
 # Guardar respuesta
+# Entrada
+# Termino
+term = api.model("Term", {
+    'nombre': fields.String(example='pysibila_concepto_prueba'),
+    'tipo_termino': fields.String(enum=['concepto', 'relacion']),
+})
+
+answer = api.model("Answer", {
+    'respuesta': fields.List(fields.Nested(term)),
+})
+
+answer_list = api.model("AnswerList", {
+    'respuestas': fields.List(fields.Nested(answer)),
+})
+
+# Salida
+answer_response = api.model('AnswerResponse', {
+    "estado": fields.String(description="Estado", enum=['ok', 'error', 'no encontrado']),
+    "mensaje": fields.String,
+    "datos": fields.List(fields.Nested(term))
+})
+
+answer_list_response = api.model('AnswerListResponse', {
+    'respuestas': fields.List(fields.Nested(answer_response))
+})

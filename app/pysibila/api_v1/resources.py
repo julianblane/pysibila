@@ -1,20 +1,22 @@
 from flask import request
-from flask_restx import Resource
+from flask_restx import Resource, marshal
 from flask_pydantic import validate
-
-from .schemas import response_404_structure, response_404_content, \
-    concept_list_response, concept_name, concept_response, \
-    relation_list_response, relation_response, estructure
-
+import json
 # Se debe importar el blueprint aunque no se utilice para que el codigo
 # en este archivo sea leido, no modificar
 from .ext import api, pysibila_v1_bp
 
 from app.conocimiento.views import \
-    get_concepts, create_concept, get_concept, update_concept, delete_concept,\
-    get_relations, get_relation, create_structure, save_responses
+    update_concept, create_structure, save_responses
 
+# Schemas and models
+from .schemas import response_404_structure, \
+    concept_list_response, concept_name, concept_response, \
+    relation_list_response, relation_response, estructure, \
+    answer_list, answer_list_response, answer_response
+# Input models
 from .models import ConceptRegister, EstructureRegister
+from app.conocimiento.models import AnswerList, Concept, Relation
 
 # Funcionalidades heredadas
 # Conceptos
@@ -23,7 +25,8 @@ class ConceptList(Resource):
     @api.marshal_with(concept_list_response)
     def get(self):
         """Obtiene un listado con todos los conceptos de la base de datos"""
-        return get_concepts()
+        concept_list, data = Concept.all()
+        return data
 
 
 @api.route("/concepto")
@@ -36,16 +39,17 @@ class ConceptCreate(Resource):
     @api.response(400, 'Validation error: Estructura del json incorrecta', response_404_structure)
     def post(self):
         """Inserta un nuevo concepto en la base de conocimiento"""
-        data = request.get_json()
-        return create_concept(data)
-
+        request_data = request.get_json()
+        concept, response_data = Concept.save(request_data['nombre'])
+        return response_data
 
 @api.route("/concepto/<nombre>")
 class ConceptManager(Resource):
     @api.marshal_with(concept_response)
     def get(self, nombre):
         """Busca un concepto dentro de la base de conocimiento y muestra los datos si existe"""
-        return get_concept(nombre)
+        concept, data = Concept.get(nombre)
+        return data
 
     @validate(body=ConceptRegister)
     @api.expect(concept_name)
@@ -59,7 +63,7 @@ class ConceptManager(Resource):
     @api.marshal_with(concept_response)
     def delete(self, nombre):
         """Borra un concepto de la base de conocimiento buscandolo por nombre"""
-        return delete_concept(nombre)
+        return Concept.delete(nombre)
 
 
 # Relaciones
@@ -68,7 +72,8 @@ class RelationList(Resource):
     @api.marshal_with(relation_list_response)
     def get(self):
         """Devuelve todas las relaciones que contiene la base de conocimiento"""
-        return get_relations()
+        relation_list, data = Relation.all()
+        return data
 
 
 @api.route("/relacion/<nombre>")
@@ -76,7 +81,8 @@ class RelationGet(Resource):
     @api.marshal_with(relation_response)
     def get(self, nombre):
         """Busca una relación dentro de la base de conocimiento y muestra los datos si existe"""
-        return get_relation(nombre)
+        relation, data = Relation.get(nombre)
+        return data
 
 
 # Estructura
@@ -84,7 +90,8 @@ class RelationGet(Resource):
 class StructureCreate(Resource):
     @validate(body=EstructureRegister)
     @api.expect(estructure)
-    @api.marshal_with(relation_response)
+    @api.marshal_with(answer_response)
+    @api.response(400, 'Validation error', response_404_structure)
     def post(self):
         """Inserta una nueva estructura en la base de conocimiento"""
         data = request.get_json()
@@ -108,8 +115,13 @@ class ResponseCorrect(Resource):
 
 # Nuevas funcionalidades
 @api.route("/respuesta/grabar")
-class ResponseSave(Resource):
+class AnswersSave(Resource):
+    @validate(body=AnswerList)
+    @api.expect(answer_list)
+    @api.marshal_with(answer_list)
     def post(self):
         """Inserta una lista de respuestas en forma de concepto-relacion-concepto en la base de datos"""
         data = request.get_json()
-        return save_responses(data)
+        answer = AnswerList(**data)
+
+        return answer
