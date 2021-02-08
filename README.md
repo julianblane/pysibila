@@ -22,7 +22,7 @@ Para crear el diagrama ejecutar en consola:
         dot -Tpng classes.dot > models_uml.png
         rm classes.dot
     
-# Ejecución 
+# Intalación y ejecución 
 
 - Crear un entorno virtual con virtualenv para python3
 
@@ -62,8 +62,18 @@ Para crear el diagrama ejecutar en consola:
 
 
 # Documentación
-Se puede acceder a la documentación de la api con la url raiz
+Se puede acceder a la documentación de la api en swagger en la url raiz
 
 Documentacion de la api de java:
 https://app.swaggerhub.com/apis/UTN-SIBILA/UTN-SIBILA/1.0.0#/
 
+# Testing
+La aplicación se puede probar desde la interfaz de swagger o ejecutando
+los test unitarios en app/pysibila/api_v1/test/test.py. 
+Esto permite realizar pruebas de extremo a extremo
+
+Se debe verificar que se utilice la base local de prueba, esto se define cambiando 
+la variable testing en el archivo: config/urls.py
+
+Las pruebas de cada modulo se encuentran en el archivo test.py del 
+respectivo modulo
