@@ -6,6 +6,21 @@ Pysibila es una api desarrollada en flask con el objetivo de permitir agregar nu
 ![alt text](/documentacion/estructura_sibila.png)
 # Estructura de pysibila
 ![alt text](/documentacion/estructura_pysibila.png)
+
+# Modulos
+## Conocimiento
+Realiza la gestion de conceptos y relaciones y las
+operaciones en la base de datos de OrientDB
+### Modelos del domino
+![alt text](/documentacion/conocimiento/models_uml.png)
+
+Para crear el diagrama ejecutar en consola:
+
+        cd documentacion/conocimiento
+        pyreverse ../../app/conocimiento/models.py
+        dot -Tpng classes.dot > models_uml.png
+        rm classes.dot
+    
 # Ejecución 
 
 - Crear un entorno virtual con virtualenv para python3
@@ -50,3 +65,4 @@ Se puede acceder a la documentación de la api con la url raiz
 
 Documentacion de la api de java:
 https://app.swaggerhub.com/apis/UTN-SIBILA/UTN-SIBILA/1.0.0#/
+

@@ -116,10 +116,6 @@ class Relation(Term):
     id: str
     tipo: str
 
-    # Atributos de comportamiento
-    preview_concept = Concept
-    next_concept = Concept
-
     # Al definirle un valor al objeto ya no es requerido al crearlo
     tipo_termino = TermType.RELACION
 
