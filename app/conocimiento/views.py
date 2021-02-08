@@ -13,16 +13,6 @@ def update_concept(name, data):
     return request.json()
 
 
-def create_structure(data):
-    """Crea una estructura de concepto relacion concepto,
-    creando cada concepto y la relacion entre ellos solo si no existen"""
-    # Problema: En ocaciones parece duplicar los coneptos en bd
-    # Ver que tipo de objeto deberia devolver data (estimo que un par concepto relacion concepto)
-    # Temporario: pedido a la api en java
-    request = requests.post(f'{URL}/estructura', data=data)
-    return request.json()
-
-
 def save_response(respuesta):
     """Guarda una respuesta completa en base de datos"""
     # Sera necesario implementar un sistema de rollback

@@ -104,6 +104,12 @@ class Concept(Term):
         request = requests.delete(f'{URL}/concepto/{name}')
         return request.json()
 
+    @classmethod
+    def exists(cls, name):
+        """Indica si el objeto se encuentra en la base de datos"""
+        concept, data = cls.get(name)
+        return concept is not None
+
 
 class Relation(Term):
     # Atributos para serializacion
@@ -141,3 +147,43 @@ class Relation(Term):
                 relation_list.append(Relation(**relation_data))
             return relation_list, data
         return None, data
+
+    @classmethod
+    def exists(cls, name):
+        """Indica si el objeto se encuentra en la base de datos"""
+        relation, data = cls.get(name)
+        return relation is not None
+
+
+class Structure(BaseModel):
+    """Una estructura es una instancia de una relacion entre 2 conceptos
+    Una relacion no puede existir sino conecta 2 concepto
+    Un concepto no deberia existir sin ninguna relacion que lo vincule"""
+    # Atributos para serializacion
+    conceptoOrigen: str
+    conceptoDestino: str
+    relacion: str
+
+    @classmethod
+    def get_relations(cls, origin_concept, destiny_concept):
+        """Obtiene todas las estructuras entre 2 conceptos"""
+        pass
+
+    def save(self):
+        """Crea una estructura de concepto relacion concepto,
+        creando cada concepto y la relacion entre ellos solo si no existen"""
+        data = {
+            'conceptoOrigen': self.conceptoOrigen,
+            'conceptoDestino': self.conceptoDestino,
+            'relacion': self.relacion
+        }
+        # Problema: En ocaciones parece duplicar los coneptos en bd
+        # Ver que tipo de objeto deberia devolver data (estimo que un par concepto relacion concepto)
+        # Temporario: pedido a la api en java
+        request = requests.post(f'{URL}/estructura', data=data)
+        # A futuro debera obtener los conceptos y la relacion y guardarlos en sus atributos
+        return request.json()
+
+    def get(self, relation, origin_concept, destiny_concept):
+        """Obtiene una estructura a partir del nombre de sus conceptos y su relacion si existe"""
+        pass

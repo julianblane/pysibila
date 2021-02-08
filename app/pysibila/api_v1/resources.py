@@ -7,7 +7,7 @@ import json
 from .ext import api, pysibila_v1_bp
 
 from app.conocimiento.views import \
-    update_concept, create_structure, save_responses
+    update_concept
 
 # Schemas and models
 from .schemas import response_404_structure, \
@@ -16,7 +16,7 @@ from .schemas import response_404_structure, \
     answer_list, answer_list_response, answer_response
 # Input models
 from .models import ConceptRegister, EstructureRegister
-from app.conocimiento.models import AnswerList, Concept, Relation
+from app.conocimiento.models import AnswerList, Concept, Relation, Structure
 
 # Funcionalidades heredadas
 # Conceptos
@@ -88,14 +88,15 @@ class RelationGet(Resource):
 # Estructura
 @api.route("/estructura")
 class StructureCreate(Resource):
-    @validate(body=EstructureRegister)
+    @validate(body=Structure)
     @api.expect(estructure)
     @api.marshal_with(answer_response)
     @api.response(400, 'Validation error', response_404_structure)
     def post(self):
         """Inserta una nueva estructura en la base de conocimiento"""
         data = request.get_json()
-        return create_structure(data)
+        structure = Structure(**data)
+        return structure.save()
 
 
 # Respuesta
