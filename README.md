@@ -11,7 +11,8 @@ Pysibila es una api desarrollada en flask con el objetivo de permitir agregar nu
 ## Conocimiento
 Realiza la gestion de conceptos y relaciones y las
 operaciones en la base de datos de OrientDB
-### Modelos del domino
+### Models
+Objetos del dominio definidos en app/conocimiento/models.py
 ![alt text](/documentacion/conocimiento/models_uml.png)
 
 Para crear el diagrama ejecutar en consola:
