@@ -15,9 +15,17 @@ class Term(BaseModel):
     tipo_termino: TermType
 
 
+class AnswerResponse(BaseModel):
+    """Resultado de la accion realizada con la respuesta que será devuelta como respuesta a la llamada"""
+    # Atributos a serializar
+    estado: str
+    mensaje: str
+    datos: List[Term]
+
+
 class Answer(BaseModel):
     """Respuesta formada por un conjunto de conceptos y relaciones en formato concepto - relacion - concepto"""
-    respuesta: List[Term]
+    terminos: List[Term]
 
     def get(self):
         """Obtiene una respuesta completa de base de datos"""
@@ -31,40 +39,76 @@ class Answer(BaseModel):
         """Devuelve un objeto de respuesta indicando el error"""
         return AnswerResponse(estado="error",
                               mensaje="Los terminos no siguen el formato concepto, relacion, concepto",
-                              datos=self.respuesta)
+                              datos=self.terminos)
 
     def is_valid_format(self):
         """Verifica si el formato de la respuesta es de la forma concepto - relacion - concepto"""
 
         # Cantidad de terminos de la respuesta
-        if len(self.respuesta) < 3 or len(self.respuesta) % 2 == 0:
+        if len(self.terminos) < 3 or len(self.terminos) % 2 == 0:
             return False
         # Verificar que los terminos pares sean conceptos
-        if not all(map(lambda term: term.tipo_termino == TermType.CONCEPTO, self.respuesta[::2])):
+        if not all(map(lambda term: term.tipo_termino == TermType.CONCEPTO, self.terminos[::2])):
             return False
         # Verificar que los terminos pares sean conceptos
-        if not all(map(lambda term: term.tipo_termino == TermType.RELACION, self.respuesta[1::2])):
+        if not all(map(lambda term: term.tipo_termino == TermType.RELACION, self.terminos[1::2])):
             return False
         return True
 
+    def save(self):
+        """Guarda una respuesta completa en base de datos y devuelve el resultado de la operacion"""
+        # Nota: a fututro implementar transacciones con commit y rollback
+
+        # Si el formato no es valido devuelve un objeto de respuesta indicando el error
+        if not self.is_valid_format():
+            return AnswerResponse(estado="error",
+                                  mensaje="Los terminos no siguen el formato concepto - relacion - concepto",
+                                  datos=self.terminos)
+
+        # Se recorre los conceptos guardando cada estructura
+        for term_index in range(0, len(self.terminos) - 2, 2):
+            structure = Structure(conceptoOrigen=self.terminos[term_index].nombre,
+                                  conceptoDestino=self.terminos[term_index + 2].nombre,
+                                  relacion=self.terminos[term_index + 1].nombre)
+            data = structure.save()
+            # Si surge un error durante el proceso de guardado se deja de guardar y se
+            # devuelve un objeto de respuesta indicando error
+            # Nota: a fututro implementar transacciones con commit y rollback
+            if not data['estado'] == 'ok':
+                return AnswerResponse(estado="error",
+                                      mensaje="Error en la grabación de la pregunta",
+                                      datos=self.terminos)
+
+        # La respuesta se grabo correctamente
+        return AnswerResponse(estado="ok",
+                              mensaje="Respuesta grabada correctamente",
+                              datos=self.terminos)
 
 
-class AnswerResponse(BaseModel):
-    """Estado de la accion realizada con la respuesta"""
-    # Atributos a serializar
-    estado: str
-    mensaje: str
-    datos: List[Term]
+class AnswerListResponse(BaseModel):
+    """Lista de resultados de las acciones realizadas con las respuestas que será
+    devuelta como respuesta a la llamada"""
+    respuestas: List[AnswerResponse]
 
 
 class AnswerList(BaseModel):
     """Maneja el proceso que se desea realizar sobre la lista de respuestas"""
+    # Atributos para serializacion
     respuestas: List[Answer]
 
+    # Atributos del dominio
 
-class AnswerListResponse(BaseModel):
-    """Lista de estados de las acciones realizadas con las respuestas"""
-    respuestas: List[AnswerResponse]
+    def save(self):
+        """Guarda un conjunto de respuestas en base de datos y devuelve la respuesta para cada operacion"""
+        # Listado de respuestas al grabado de respuestas en base de datos
+        answer_list_response = AnswerListResponse(respuestas=[])
+        for answer in self.respuestas:
+            # Guarda cada respuesta y agrega el resultado de la operacion a la lista
+            # de respuestas de operacion
+            answer_list_response.respuestas.append(answer.save())
+        return answer_list_response
+
+
 
 
 class Equivalency(BaseModel):

@@ -7,7 +7,7 @@ class TestAnswer(unittest.TestCase):
         self.request_correct = {
             "respuestas": [
                 {
-                    "respuesta": [
+                    "terminos": [
                         {
                             "nombre": "pysibila_concepto_prueba",
                             "tipo_termino": "concepto"
@@ -28,7 +28,7 @@ class TestAnswer(unittest.TestCase):
         self.request_incorrect_format = {
             "respuestas": [
                 {
-                    "respuesta": [
+                    "terminos": [
                         {
                             "nombre": "pysibila_concepto_prueba",
                             "tipo_termino": "concepto"
@@ -49,7 +49,7 @@ class TestAnswer(unittest.TestCase):
         self.request_incorrect_format_2 = {
             "respuestas": [
                 {
-                    "respuesta": [
+                    "terminos": [
                         {
                             "nombre": "pysibila_concepto_prueba",
                             "tipo_termino": "concepto"
@@ -62,7 +62,7 @@ class TestAnswer(unittest.TestCase):
         self.request_incorrect_format_3 = {
             "respuestas": [
                 {
-                    "respuesta": [
+                    "terminos": [
                         {
                             "nombre": "pysibila_concepto_prueba",
                             "tipo_termino": "relacion"

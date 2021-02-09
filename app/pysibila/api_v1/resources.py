@@ -11,7 +11,7 @@ from app.conocimiento.views import \
 from .schemas import response_404_structure, \
     concept_list_response, concept_name, concept_response, \
     relation_list_response, relation_response, estructure, \
-    answer_list, answer_response, answer_evaluation_request
+    answer_list, answer_response, answer_evaluation_request, answer_list_response
 # Input models
 from .models import ConceptRegister
 from app.conocimiento.models import AnswerList, Concept, Relation, Structure
@@ -117,10 +117,11 @@ class ResponseCorrect(Resource):
 class AnswersSave(Resource):
     @validate(body=AnswerList)
     @ns_am.expect(answer_list)
-    @ns_am.marshal_with(answer_list)
+    @ns_am.marshal_with(answer_list_response)
     def post(self):
-        """Inserta una lista de respuestas en forma de concepto-relacion-concepto en la base de datos"""
+        """Inserta una lista de respuestas en forma de concepto-relacion-concepto en la base de datos
+        devolviendo el resultado de cada operacion"""
         data = request.get_json()
-        answer = AnswerList(**data)
-
-        return answer
+        answer_list_object = AnswerList(**data)
+        answer_list_response_object = answer_list_object.save()
+        return answer_list_response_object

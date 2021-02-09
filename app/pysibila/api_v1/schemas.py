@@ -111,11 +111,30 @@ term = ns_am.model("Term", {
 })
 
 answer = ns_am.model("Answer", {
-    'respuesta': fields.List(fields.Nested(term)),
+    'terminos': fields.List(fields.Nested(term)),
 })
 
 answer_list = ns_am.model("AnswerList", {
-    'respuestas': fields.List(fields.Nested(answer)),
+    'respuestas': fields.List(fields.Nested(answer),
+                              example=[
+                                  {
+                                      "terminos": [
+                                          {
+                                              "nombre": "pysibila_concepto_prueba",
+                                              "tipo_termino": "concepto"
+                                          },
+                                          {
+                                              "nombre": "pysibila_concepto_prueba",
+                                              "tipo_termino": "relacion"
+                                          },
+                                          {
+                                              "nombre": "pysibila_concepto_prueba",
+                                              "tipo_termino": "concepto"
+                                          },
+                                      ]
+                                  }
+                              ]
+                              ),
 })
 
 # Salida

@@ -99,6 +99,9 @@ class TestAPI(unittest.TestCase):
                 }
             ]
         }
+        self.answer_list_response = {
+            'respuestas': []
+        }
 
     # Funciones de soporte
     def create_concept(self, concept=None):
@@ -438,3 +441,142 @@ class TestAPI(unittest.TestCase):
 
         # Eliminar concepto creado
         self.delete_concept()
+
+    def test_answer_list_save(self):
+        # Formato de respuesta incorrecto
+        incorrect_request =  {
+            "respuestas": [
+                {
+                    "terminos": [
+                        {
+                            "nombre": "pysibila_concepto_prueba",
+                            "tipo_termino": "concepto"
+                        },
+                    ]
+                }
+            ]
+        }
+        response = self.tester.post(f'/respuesta/grabar',
+                                    headers={"Content-Type": "application/json"},
+                                    json=incorrect_request)
+        self.assertEqual(200, response.status_code)
+        self.assertTrue(compare(self.answer_response, response.json['respuestas'][0]))
+        self.assertEqual('error', response.json['respuestas'][0]['estado'])
+
+        # Respuesta incorrecta
+        # Estructura incorrecta
+        incorrect_structure_request = {
+            "respuestas": [
+                {
+                    "terminos": [
+                        {
+                            "nombre": "pysibila_concepto_prueba",
+                            "tipo_termino_incorrecto": "concepto"
+                        },
+                    ]
+                }
+            ]
+        }
+        response = self.tester.post(f'/respuesta/grabar',
+                                    headers={"Content-Type": "application/json"},
+                                    json=incorrect_structure_request)
+        self.assertEqual(400, response.status_code)
+        self.assertTrue(compare(self.response_404_structure, response.json))
+
+
+        # Caso de respuesta grabada correctamente
+        concept_1, concept_2, concept_3, concept_4 = f'{self.concept_name}_1', f'{self.concept_name}_2', \
+                                                     f'{self.concept_name}_3', f'{self.concept_name}_4',
+        relation_1, relation_2, relation_3 = f'{self.relation_name}_1', f'{self.relation_name}_2', \
+                                             f'{self.relation_name}_3'
+        # Borrar conceptos anteriores
+        self.delete_concept(concept_1)
+        self.delete_concept(concept_2)
+        self.delete_concept(concept_3)
+        self.delete_concept(concept_4)
+
+        # Respuesta 1 correcta
+        # Respuesta 2 formato invalido
+        # Respuesta 3 correcta
+        request_correct = {
+            "respuestas": [
+                {
+                    "terminos": [
+                        {
+                            "nombre": concept_1,
+                            "tipo_termino": "concepto"
+                        },
+                        {
+                            "nombre": relation_1,
+                            "tipo_termino": "relacion"
+                        },
+                        {
+                            "nombre": concept_2,
+                            "tipo_termino": "concepto"
+                        },
+                        {
+                            "nombre": relation_2,
+                            "tipo_termino": "relacion"
+                        },
+                        {
+                            "nombre": concept_3,
+                            "tipo_termino": "concepto"
+                        },
+                    ]
+                },
+                {
+                    "terminos": [
+                        {
+                            "nombre": concept_1,
+                            "tipo_termino": "concepto"
+                        },
+                    ]
+                },
+                {
+                    "terminos": [
+                        {
+                            "nombre": concept_1,
+                            "tipo_termino": "concepto"
+                        },
+                        {
+                            "nombre": relation_3,
+                            "tipo_termino": "relacion"
+                        },
+                        {
+                            "nombre": concept_4,
+                            "tipo_termino": "concepto"
+                        },
+                    ]
+                }
+            ]
+        }
+        response = self.tester.post(f'/respuesta/grabar',
+                                    headers={"Content-Type": "application/json"},
+                                    json=request_correct)
+        self.assertEqual(200, response.status_code)
+        # Formato lista de respuestas
+        self.assertTrue(compare(self.answer_list_response, response.json))
+        # Formato de respuesta
+        self.assertTrue(compare(self.answer_response, response.json['respuestas'][0]))
+        self.assertEqual('ok', response.json['respuestas'][0]['estado'])
+
+        self.assertTrue(compare(self.answer_response, response.json['respuestas'][1]))
+        self.assertEqual('error', response.json['respuestas'][1]['estado'])
+
+        self.assertTrue(compare(self.answer_response, response.json['respuestas'][2]))
+        self.assertEqual('ok', response.json['respuestas'][2]['estado'])
+
+        # Verificar existencia de conceptos y relaciones
+        self.assertTrue(self.concept_exists(concept_1))
+        self.assertTrue(self.concept_exists(concept_2))
+        self.assertTrue(self.concept_exists(concept_3))
+        self.assertTrue(self.concept_exists(concept_4))
+        self.assertTrue(self.relation_exists(relation_1))
+        self.assertTrue(self.relation_exists(relation_2))
+        self.assertTrue(self.relation_exists(relation_3))
+
+        # Borrar conceptos creados
+        self.delete_concept(concept_1)
+        self.delete_concept(concept_2)
+        self.delete_concept(concept_3)
+        self.delete_concept(concept_4)
