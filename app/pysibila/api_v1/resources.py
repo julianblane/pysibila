@@ -119,7 +119,7 @@ class ResponseCorrect(Resource):
 class AnswersSave(Resource):
     @validate(body=AnswerList)
     @api.expect(answer_list)
-    @api.marshal_with(answer_list)
+    @api.marshal_with(answer_list_response)
     def post(self):
         """Inserta una lista de respuestas en forma de concepto-relacion-concepto en la base de datos"""
         data = request.get_json()

@@ -16,6 +16,7 @@ class Term(BaseModel):
 
 
 class Answer(BaseModel):
+    """Respuesta formada por un conjunto de conceptos y relaciones en formato concepto - relacion - concepto"""
     respuesta: List[Term]
 
     def get(self):
@@ -26,22 +27,44 @@ class Answer(BaseModel):
         """Almacena una respuesta completa en base de datos"""
         pass
 
+    def invalid_format_response(self):
+        """Devuelve un objeto de respuesta indicando el error"""
+        return AnswerResponse(estado="error",
+                              mensaje="Los terminos no siguen el formato concepto, relacion, concepto",
+                              datos=self.respuesta)
+
     def is_valid_format(self):
         """Verifica si el formato de la respuesta es de la forma concepto - relacion - concepto"""
+
         # Cantidad de terminos de la respuesta
         if len(self.respuesta) < 3 or len(self.respuesta) % 2 == 0:
             return False
         # Verificar que los terminos pares sean conceptos
-        if not all(map(lambda term: term.tipo == TermType.CONCEPTO, self.respuesta[::2])):
+        if not all(map(lambda term: term.tipo_termino == TermType.CONCEPTO, self.respuesta[::2])):
             return False
         # Verificar que los terminos pares sean conceptos
-        if not all(map(lambda term: term.tipo == TermType.RELACION, self.respuesta[1::2])):
+        if not all(map(lambda term: term.tipo_termino == TermType.RELACION, self.respuesta[1::2])):
             return False
         return True
 
 
+
+class AnswerResponse(BaseModel):
+    """Estado de la accion realizada con la respuesta"""
+    # Atributos a serializar
+    estado: str
+    mensaje: str
+    datos: List[Term]
+
+
 class AnswerList(BaseModel):
+    """Maneja el proceso que se desea realizar sobre la lista de respuestas"""
     respuestas: List[Answer]
+
+
+class AnswerListResponse(BaseModel):
+    """Lista de estados de las acciones realizadas con las respuestas"""
+    respuestas: List[AnswerResponse]
 
 
 class Equivalency(BaseModel):
