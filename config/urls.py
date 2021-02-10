@@ -1,6 +1,6 @@
 # Testing: Si la variable es true se utilizaran los
 # sistemas locales creados para pruebas
-testing = True
+testing = False
 
 if testing:
     URL = "http://localhost:8080"

@@ -1,6 +1,9 @@
-from flask_restx import fields, Model
+from flask_restx import fields
 
 from . import ns_cm, ns_am
+
+ESTADO_ENUM = ['ok', 'error', 'no encontrado']
+TERM_TIPO_ABV_ENUM = ['C', 'R', '']
 
 # Response 404
 body_param = ns_cm.model('body_param', {
@@ -44,7 +47,7 @@ data_concepts = ns_cm.model("DataConcepts", {
 })
 
 concept_list_response = ns_cm.model('ConceptListResponse', {
-    "estado": fields.String(description="Estado", enum=['ok', 'error', 'no encontrado']),
+    "estado": fields.String(description="Estado", enum=ESTADO_ENUM),
     "mensaje": fields.String,
     "datos": fields.Nested(data_concepts)
 })
@@ -55,7 +58,7 @@ data_concept = ns_cm.model("DataConcept", {
 })
 
 concept_response = ns_cm.model('ConceptResponse', {
-    "estado": fields.String(description="Estado", enum=['ok', 'error', 'no encontrado']),
+    "estado": fields.String(description="Estado", enum=ESTADO_ENUM),
     "mensaje": fields.String,
     "datos": fields.Nested(data_concept)
 })
@@ -78,7 +81,7 @@ data_relations = ns_cm.model("DataRelations", {
 })
 
 relation_list_response = ns_cm.model("RelationListResponse", {
-    "estado": fields.String(description="Estado", enum=['ok', 'error', 'no encontrado']),
+    "estado": fields.String(description="Estado", enum=ESTADO_ENUM),
     "mensaje": fields.String,
     "datos": fields.Nested(data_relations)
 })
@@ -88,7 +91,7 @@ data_relation = ns_cm.model("DataRelation", {
 })
 
 relation_response = ns_cm.model("RelationResponse", {
-    "estado": fields.String(description="Estado", enum=['ok', 'error', 'no encontrado']),
+    "estado": fields.String(description="Estado", enum=ESTADO_ENUM),
     "mensaje": fields.String,
     "datos": fields.Nested(data_relation)
 })
@@ -139,7 +142,7 @@ answer_list = ns_am.model("AnswerList", {
 
 # Salida
 answer_response = ns_am.model('AnswerResponse', {
-    "estado": fields.String(description="Estado", enum=['ok', 'error', 'no encontrado']),
+    "estado": fields.String(description="Estado", enum=ESTADO_ENUM),
     "mensaje": fields.String,
     "datos": fields.List(fields.Nested(term))
 })
@@ -152,4 +155,36 @@ answer_list_response = ns_am.model('AnswerListResponse', {
 answer_evaluation_request = ns_am.model("AnswerEvaluateRequest", {
     "respuestaBase": fields.String(description="Respuesta profesor"),
     "respuestaAlumno": fields.String(description="Respuesta alumno")
+})
+
+calification_dict = ns_am.model("CalificationDict", {
+    "calificacion": fields.Float(description="Calificacion")
+})
+
+answer_evaluation_response = ns_am.model("AnswerEvaluateResponse", {
+    "estado": fields.String(description="Estado", enum=ESTADO_ENUM),
+    "mensaje": fields.String,
+    "datos": fields.Nested(calification_dict)
+})
+
+answer_correction_request = ns_am.model('AnswerCorrectRequest', {
+    'respuesta': fields.String(description="Respuesta")
+})
+
+answer_correction_error = ns_am.model("AnswerCorrectError", {
+    "error": fields.Boolean(description="Es un termino ortograficacmente incorrecto"),
+    "sugerencias": fields.List(fields.String, description="Sugerencias de correcciones")
+})
+
+answer_correction_term = ns_am.model('AnswerCorrectTerm', {
+    "error": fields.Nested(answer_correction_error),
+    "tipo": fields.String(description="Tipo de termino", enum=TERM_TIPO_ABV_ENUM),
+    "sugerenciaTipo": fields.String(description="Tipo de termino", enum=TERM_TIPO_ABV_ENUM),
+    "nombre": fields.String(description="Termino")
+})
+
+answer_correction_response = ns_am.model('AnswerCorrectResponse', {
+    "estado": fields.String(description="Estado", enum=ESTADO_ENUM),
+    "mensaje": fields.String,
+    "datos": fields.List(fields.Nested(answer_correction_term))
 })

@@ -1,5 +1,5 @@
 from flask import request
-from flask_restx import Resource, marshal
+from flask_restx import Resource
 from flask_pydantic import validate
 
 from . import ns_cm, ns_am
@@ -11,13 +11,21 @@ from app.conocimiento.views import \
 from .schemas import response_404_structure, \
     concept_list_response, concept_name, concept_response, \
     relation_list_response, relation_response, estructure, \
-    answer_list, answer_response, answer_evaluation_request, answer_list_response
+    answer_list, answer_response, answer_evaluation_request, answer_list_response, answer_evaluation_response, \
+    answer_correction_request, answer_correction_response
 # Input models
 from .models import ConceptRegister
 from app.conocimiento.models import AnswerList, Concept, Relation, Structure
+from app.academic.models import AnswerEvaluation
+
 
 # Funcionalidades heredadas
 # Conceptos
+from app.academic.views import answer_evaluate
+from app.orto.models import AnswerCorrection
+from app.orto.views import answer_correct
+
+
 @ns_cm.route("/conceptos", endpoint='concept_list')
 class ConceptList(Resource):
     @ns_cm.marshal_with(concept_list_response)
@@ -25,6 +33,7 @@ class ConceptList(Resource):
         """Obtiene un listado con todos los conceptos de la base de datos"""
         concept_list, data = Concept.all()
         return data
+
 
 @ns_cm.route("/concepto")
 class ConceptCreate(Resource):
@@ -39,6 +48,7 @@ class ConceptCreate(Resource):
         request_data = request.get_json()
         concept, response_data = Concept.save(request_data['nombre'])
         return response_data
+
 
 @ns_cm.route("/concepto/<nombre>")
 class ConceptManager(Resource):
@@ -99,17 +109,24 @@ class StructureCreate(Resource):
 # Respuesta
 @ns_am.route("/respuesta/evaluar")
 class ResponseEvaluate(Resource):
+    @validate(body=AnswerEvaluation)
     @ns_am.expect(answer_evaluation_request)
+    @ns_am.marshal_with(answer_evaluation_response)
     def post(self):
         """Evalúa a respuesta de un estudiante y devuelve la calificación"""
-        pass
+        data = request.get_json()
+        return answer_evaluate(data['respuestaBase'], data['respuestaAlumno'])
 
 
 @ns_am.route("/respuesta/corregir")
 class ResponseCorrect(Resource):
+    @validate(body=AnswerCorrection)
+    @ns_am.expect(answer_correction_request)
+    @ns_am.marshal_with(answer_correction_response)
     def post(self):
         """Corrige ortograficamente una respuesta, separa los términos y los clasifica en conceptos y relaciones"""
-        pass
+        data = request.get_json()
+        return answer_correct(data['respuesta'])
 
 
 # Nuevas funcionalidades
